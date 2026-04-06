@@ -22,7 +22,7 @@ V_growth = K / (1 + np.exp(-r * (t - t_peak)))
 # Growth + Decay Model
 V = []
 for i in range(len(t)):
-    if t[i] <= t_peak:
+   if t[i] <= t_peak:
         V.append(V_growth[i])
     else:
         peak_value = V_growth[np.where(t >= t_peak)][0]
