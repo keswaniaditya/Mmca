@@ -1,0 +1,51 @@
+import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
+
+st.title("📈 Instagram Reel Virality Model")
+
+st.sidebar.header("Input Parameters")
+
+# User Inputs
+r = st.sidebar.slider("Growth Rate (r)", 0.1, 2.0, 0.8)
+d = st.sidebar.slider("Decay Rate (d)", 0.1, 1.0, 0.3)
+K = st.sidebar.number_input("Maximum Audience (K)", value=100000)
+alpha = st.sidebar.slider("Sharing Ratio (alpha)", 0.01, 0.5, 0.1)
+t_peak = st.sidebar.slider("Peak Day", 1, 15, 6)
+
+# Time
+t = np.linspace(0, 15, 100)
+
+# Logistic Growth
+V_growth = K / (1 + np.exp(-r * (t - t_peak)))
+
+# Growth + Decay Model
+V = []
+for i in range(len(t)):
+    if t[i] <= t_peak:
+        V.append(V_growth[i])
+    else:
+        peak_value = V_growth[np.where(t >= t_peak)][0]
+        V.append(peak_value * np.exp(-d * (t[i] - t_peak)))
+
+V = np.array(V)
+
+# Sharers
+S = alpha * V
+
+# Plot
+fig, ax = plt.subplots()
+ax.plot(t, V, label="Viewers")
+ax.plot(t, S, label="Sharers")
+ax.set_xlabel("Time (days)")
+ax.set_ylabel("Count")
+ax.set_title("Instagram Reel Virality Model")
+ax.legend()
+ax.grid()
+
+st.pyplot(fig)
+
+# Peak Info
+st.subheader("📊 Insights")
+st.write(f"Peak Viewers: {int(max(V))}")
+st.write(f"Peak occurs around Day: {t_peak}")
